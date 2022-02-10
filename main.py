@@ -12,7 +12,7 @@ class UI(QMainWindow):
 
         self.airportSelect = self.findChild(QComboBox, "airportSelect")
         self.searchButton = self.findChild(QPushButton, "searchButton")
-        self.lastResultButton = self.findChild(QPushButton, "lastResultButton")
+        self.prevResultButton = self.findChild(QPushButton, "prevResultButton")
         self.airportCodeLabel = self.findChild(QLabel, "airportCodeLabel")
         self.airportNameLabel = self.findChild(QLabel, "airportNameLabel")
         self.locationLabel = self.findChild(QLabel, "locationLabel")
@@ -21,7 +21,7 @@ class UI(QMainWindow):
         self.nearbyList = self.findChild(QListWidget, "nearbyList")
 
         self.isFirstSearch = True
-        self.lastResultButton.hide()
+        self.prevResultButton.hide()
         self.airportCodeLabel.hide()
         self.airportNameLabel.hide()
         self.locationLabel.hide()
@@ -29,9 +29,7 @@ class UI(QMainWindow):
         self.nearbyButton.hide()
         self.nearbyList.hide()
 
-        self.numHistory = 0
-        file = open("history.txt","w")
-        file.close()
+        self.resultHistory = []
 
         conn = sqlite3.connect("airports.db")
         cur = conn.cursor()
@@ -43,12 +41,11 @@ class UI(QMainWindow):
             self.airportSelect.addItem(row[0])
 
         self.searchButton.clicked.connect(self.search)
-        self.lastResultButton.clicked.connect(self.lastResult)
+        self.prevResultButton.clicked.connect(self.prevResult)
 
         self.show()
 
-    def search(self):
-        airportCode = self.airportSelect.currentText()
+    def loadAirportData(self, airportCode):
         conn = sqlite3.connect("airports.db")
         cur = conn.cursor()
         cur.execute("SELECT airportName, airportCity, airportState, airportZipcode, covidTesting FROM Airports WHERE airportCode = ?;", (airportCode,))
@@ -63,8 +60,12 @@ class UI(QMainWindow):
         else:
             self.covidLabel.setText("COVID Testing: Yes")
 
-        if (self.isFirstSearch == True):
-            self.lastResultButton.show()
+
+    def search(self):
+        airportCode = self.airportSelect.currentText()
+        self.loadAirportData(airportCode)
+
+        if self.isFirstSearch == True:
             self.airportCodeLabel.show()
             self.airportNameLabel.show()
             self.locationLabel.show()
@@ -72,13 +73,18 @@ class UI(QMainWindow):
             self.nearbyButton.show()
             self.isFirstSearch = False
 
-        self.numHistory += 1
-        with open("history.txt", "a") as f:
-            f.write(airportCode)
-            f.write("\n")
+        self.resultHistory.append(airportCode)
 
-    def lastResult(self):
-        pass
+        if len(self.resultHistory) > 1:
+            self.prevResultButton.show()
+
+    def prevResult(self):
+        if len(self.resultHistory) == 2:
+            self.prevResultButton.hide()
+        
+        self.resultHistory.pop()
+        airportCode = self.resultHistory[-1]
+        self.loadAirportData(airportCode)
 
 app = QApplication(sys.argv)
 UIWindow = UI()
