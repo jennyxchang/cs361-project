@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QTextBrowser, QComboBox, QListWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QComboBox, QListWidget
 from PyQt5 import uic
 import sys
 import sqlite3
@@ -21,12 +21,17 @@ class UI(QMainWindow):
         self.nearbyList = self.findChild(QListWidget, "nearbyList")
 
         self.isFirstSearch = True
+        self.lastResultButton.hide()
         self.airportCodeLabel.hide()
         self.airportNameLabel.hide()
         self.locationLabel.hide()
         self.covidLabel.hide()
         self.nearbyButton.hide()
         self.nearbyList.hide()
+
+        self.numHistory = 0
+        file = open("history.txt","w")
+        file.close()
 
         conn = sqlite3.connect("airports.db")
         cur = conn.cursor()
@@ -38,6 +43,8 @@ class UI(QMainWindow):
             self.airportSelect.addItem(row[0])
 
         self.searchButton.clicked.connect(self.search)
+        self.lastResultButton.clicked.connect(self.lastResult)
+
         self.show()
 
     def search(self):
@@ -57,12 +64,21 @@ class UI(QMainWindow):
             self.covidLabel.setText("COVID Testing: Yes")
 
         if (self.isFirstSearch == True):
+            self.lastResultButton.show()
             self.airportCodeLabel.show()
             self.airportNameLabel.show()
             self.locationLabel.show()
             self.covidLabel.show()
             self.nearbyButton.show()
             self.isFirstSearch = False
+
+        self.numHistory += 1
+        with open("history.txt", "a") as f:
+            f.write(airportCode)
+            f.write("\n")
+
+    def lastResult(self):
+        pass
 
 app = QApplication(sys.argv)
 UIWindow = UI()
