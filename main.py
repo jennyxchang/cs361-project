@@ -42,8 +42,10 @@ class UI(QMainWindow):
 
         self.searchButton.clicked.connect(self.search)
         self.prevResultButton.clicked.connect(self.prevResult)
+        self.nearbyButton.clicked.connect(self.nearbySearch)
 
         self.show()
+
 
     def loadAirportData(self, airportCode):
         conn = sqlite3.connect("airports.db")
@@ -78,6 +80,10 @@ class UI(QMainWindow):
         if len(self.resultHistory) > 1:
             self.prevResultButton.show()
 
+        self.nearbyList.clear()
+        self.nearbyList.hide()
+
+
     def prevResult(self):
         if len(self.resultHistory) == 2:
             self.prevResultButton.hide()
@@ -85,6 +91,15 @@ class UI(QMainWindow):
         self.resultHistory.pop()
         airportCode = self.resultHistory[-1]
         self.loadAirportData(airportCode)
+
+
+    def nearbySearch(self):
+        self.nearbyList.clear()
+        exampleList = ["Beecher's Handmade Cheese", "Bambuza Vietnam Kitchen and Bar", "Bigfoot Food & Spirits", "Seattle Seahawks 12 Club"]
+        for item in exampleList:
+            self.nearbyList.addItem(item)
+        self.nearbyList.show()
+
 
 app = QApplication(sys.argv)
 UIWindow = UI()
