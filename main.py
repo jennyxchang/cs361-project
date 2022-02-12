@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QComboBox, QListWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QComboBox, QListWidget, QMessageBox
 from PyQt5 import uic
 import sys
 import sqlite3
@@ -41,7 +41,8 @@ class UI(QMainWindow):
             self.airportSelect.addItem(row[0])
 
         self.searchButton.clicked.connect(self.search)
-        self.prevResultButton.clicked.connect(self.prevResult)
+        #self.prevResultButton.clicked.connect(self.prevResult)
+        self.prevResultButton.clicked.connect(self.alertBox)
         self.nearbyButton.clicked.connect(self.nearbySearch)
 
         self.show()
@@ -82,6 +83,17 @@ class UI(QMainWindow):
 
         self.nearbyList.clear()
         self.nearbyList.hide()
+
+
+    def alertBox(self):
+        alertMessage = QMessageBox()
+        alertMessage.setWindowTitle("Show previous search result?")
+        alertMessage.setText("The current result will be cleared. Are you sure?")
+        alertMessage.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        alertButton = alertMessage.exec_()
+
+        if alertButton == QMessageBox.Yes:
+            self.prevResult()
 
 
     def prevResult(self):
