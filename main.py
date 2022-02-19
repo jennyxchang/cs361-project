@@ -128,7 +128,7 @@ class UI(QMainWindow):
 
         restaurants = []
         # Reads response.
-        with open('./place-finder/output.csv', 'r') as file:
+        with open("./place-finder/output.csv", "r") as file:
             csvFile = csv.DictReader(file)
             for row in csvFile:
                 restaurants.append(dict(row)["name"])

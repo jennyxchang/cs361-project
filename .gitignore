@@ -1,4 +1,3 @@
 .venv/
 *.db
 place-finder/
-wikipedia-scraper/
