@@ -151,8 +151,6 @@ class UI(QMainWindow):
     def nearbySearch(self):
         self.nearbyList.clear()
         restaurants = self.requestPlaceFinder()
-        # exampleList = ["Beecher's Handmade Cheese", "Bambuza Vietnam Kitchen and Bar",
-        #               "Bigfoot Food & Spirits", "Seattle Seahawks 12 Club"]
         for item in restaurants:
             self.nearbyList.addItem(item)
         self.nearbyList.show()
